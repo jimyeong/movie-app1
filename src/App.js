@@ -1,18 +1,52 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import MovieItem from './Components/Movies/MovieItem';
 import './App.css';
 
+
+
 class App extends Component {
-  render() {
+
+
+    state = {
+        pictures : []
+
+    }
+
+
+    componentDidMount() {
+        this._getApi();
+
+    }
+
+    componentWillMount() {
+
+    }
+
+    _getApi = () => {
+        return fetch('https://api.unsplash.com/photos/?client_id=43d90a47ffc03b516322f77b497a9e7397f55db46389a658ed4bb074aa5c2c41')
+            .then(res => res.json())
+            .then(potato => {
+                this.setState({
+                    pictures : potato
+                })
+            })
+            .catch(err => console.log(err))
+    }
+    _renderItems = () => {
+        const photoItem =
+        this.state.pictures.map((picture,i) => {
+          return <MovieItem photo={picture.urls.thumb}
+                            name={picture.user.name}
+                            key={i}/>
+        })
+        return photoItem
+    }
+    render() {
+        console.log(this.state.pictures);
+
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+          {this.state ? this._renderItems() : 'loading'}
       </div>
     );
   }
