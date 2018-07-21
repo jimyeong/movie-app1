@@ -5,48 +5,50 @@ import './App.css';
 
 
 class App extends Component {
+    state ={
 
-
-    state = {
-        pictures : []
-
-    }
-
+    };
 
     componentDidMount() {
-        this._getApi();
+        this._getArray()
+    }
+    componentWillMount(){
 
     }
-
-    componentWillMount() {
-
-    }
-
-    _getApi = () => {
-        return fetch('https://api.unsplash.com/photos/?client_id=43d90a47ffc03b516322f77b497a9e7397f55db46389a658ed4bb074aa5c2c41')
-            .then(res => res.json())
-            .then(potato => {
-                this.setState({
-                    pictures : potato
-                })
+    _callApi = () => {
+        return fetch('https://yts.am/api/v2/list_movies.json?sort_by=download_count')
+            .then( res => res.json())
+            .then(json => json.data.movies)
+            .catch(err => {
+                console.log(err)
             })
-            .catch(err => console.log(err))
     }
-    _renderItems = () => {
-        const photoItem =
-        this.state.pictures.map((picture,i) => {
-          return <MovieItem photo={picture.urls.thumb}
-                            name={picture.user.name}
-                            key={i}/>
+    _getArray = async () => {
+        const movies = await this._callApi();
+        this.setState({
+            movies
         })
-        return photoItem
-    }
-    render() {
-        console.log(this.state.pictures);
+    };
 
+    _renderItems = () => {
+
+        const movieItem = this.state.movies.map((movie,i) => {
+            return (<MovieItem title={movie.title}
+                               poster={movie.medium_cover_image}
+                               genres={movie.genres}
+                               summary={movie.summary}
+                               key={i}
+            />)
+        });
+        return movieItem
+
+    }
+
+    render() {
+        console.log(this.state.movies)
     return (
       <div className="App">
-          {this.state ? this._renderItems() : 'loading'}
+          {this.state.movies ? this._renderItems() : 'loading'}
       </div>
     );
   }
